@@ -1,0 +1,12 @@
+services:
+  app:
+    image: node:22-alpine
+    container_name: my-devrusuh
+    restart: unless-stopped
+    user: "1000:1000"
+    working_dir: /app
+    ports:
+      - "100.108.222.30:5173:5173"
+    volumes:
+      - .:/app
+    command: npm run dev -- --host 0.0.0.0 --port 5173
