@@ -1,0 +1,53 @@
+name: Deploy ADANIX Portfolio to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Log Pre-installed Runner Node & NPM Version
+        run: |
+          echo "=== Runner Environment Diagnostic ==="
+          node --version
+          npm --version
+
+      - name: Install Project Dependencies
+        run: npm ci
+
+      - name: Build Static Production Distribution
+        run: npm run build
+        env:
+          NODE_ENV: production
+          VITE_BASE: /portofolio/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
