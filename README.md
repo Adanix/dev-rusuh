@@ -1,87 +1,87 @@
 # ADANIX — Interactive Full-Stack Developer Portfolio
 
-A modern, interactive, proof-of-work developer portfolio built with React 19, Vite 8, TypeScript, Tailwind CSS v4, Three.js, and Lucide React. Engineered strictly under the **Zero-Toolchain on Host** paradigm and designed for seamless static deployment to GitHub Pages.
+A modern, interactive, proof-of-work developer portfolio built with React 19, Vite 8, TypeScript, Tailwind CSS v4, Three.js, and Lucide React. Engineered under the **Zero-Toolchain on Host** paradigm and designed for static hosting deployment (such as GitHub Pages or custom static domains).
 
 ---
 
-## 1. Quick Start (Zero-Toolchain on Host)
+## 1. Quick Start (Development)
 
-All node processes, builds, and development servers run inside containerized environments using Docker image `node:22-alpine`.
+Proyek ini dapat dijalankan menggunakan Node.js lokal maupun lingkungan kontainer Docker terisolasi.
 
-### Menjalankan Development Server
-Development server sudah diorkestrasi melalui `docker-compose.yml`:
+### Opsi A: Menggunakan Docker (Rekomendasi / Zero-Toolchain)
 ```bash
-# Start container dev server (background)
+# Menjalankan dev server di background
 docker compose up -d
 
-# Memantau logs dev server
+# Melihat log dev server
 docker compose logs -f
 
-# Menghentikan container
+# Menghentikan kontainer
 docker compose down
 ```
-Server dapat diakses di:
-- **Tailscale/Lokal:** `http://100.108.222.30:5173`
-- **Domain Publik Live Preview:** `https://devrusuh.adanix.my.id`
 
-### Menambah atau Memperbarui Dependensi NPM
-Jalankan container ephemeral tanpa menginstall Node.js di host:
+### Opsi B: Menggunakan Node.js Lokal
 ```bash
-docker run --rm -u 1000:1000 -v $(pwd):/app -w /app node:22-alpine npm install <nama-package>
+# Install dependensi
+npm install
+
+# Menjalankan dev server
+npm run dev
 ```
+
+Akses dev server melalui browser di `http://localhost:5173` (atau sesuai konfigurasi host/port lingkungan Anda).
 
 ---
 
 ## 2. Production Build
 
-Untuk memverifikasi static bundle sebelum deployment:
+Untuk memvalidasi typecheck dan menghasilkan static production bundle:
 ```bash
-docker exec my-devrusuh npm run build
+npm run build
 ```
-Output static production files akan otomatis dihasilkan pada direktori `dist/` dengan base path `/portofolio/`.
+*(Atau via Docker: `docker exec my-devrusuh npm run build`)*
+
+Output static distribution files akan disimpan di direktori `dist/`.
 
 ---
 
-## 3. Cara Mengubah Konten Portfolio
+## 3. Konfigurasi Konten & Data Terpusat
 
-Seluruh konten dikelola terpusat pada direktori `src/data/` agar modular dan mudah diperbarui tanpa menyentuh file styling/layout:
+Seluruh data konten dikelola secara modular pada direktori `src/data/`:
 
 | File Konfigurasi | Deskripsi Data yang Dikelola |
 | :--- | :--- |
 | `src/data/site.ts` | Brand, headline, subheadline, verified email, dan URL GitHub profile. |
-| `src/data/projects.ts` | Daftar project (SIMORSA, NIXSI, Takjil), demo credentials, feature highlights, dan live links. |
-| `src/data/capabilities.ts` | Matriks problem-solution, badge kategori, dan pemetaan project pendukung. |
-| `src/data/technologies.ts` | Daftar teknologi terverifikasi, kategori, deskripsi peran arsitektur, dan provenance implementasi. |
+| `src/data/projects.ts` | Daftar proyek unggulan, demo credentials, feature highlights, dan link repositori. |
+| `src/data/capabilities.ts` | Matriks problem-solution, badge kategori, dan pemetaan proyek pendukung. |
+| `src/data/technologies.ts` | Daftar teknologi terverifikasi, kategori, dan deskripsi peran arsitektur. |
 | `src/data/workflow.ts` | 5 fase metodologi engineering (Understand, Plan, Develop, Test, Deploy). |
 | `src/data/navigation.ts` | Label dan ID anchor navbar. |
 
 ### Mengubah Email atau GitHub
-Buka `src/data/site.ts` dan perbarui field berikut:
+Buka `src/data/site.ts` dan sesuaikan nilainya:
 ```typescript
 export const siteConfig: SiteConfig = {
   // ...
-  email: "email-anda@gmail.com",
+  email: "email-anda@domain.com",
   github: "https://github.com/UsernameAnda",
 };
 ```
 
 ---
 
-## 4. Mengatur Contact Form (Formspree Endpoint)
+## 4. Pengaturan Contact Form (Formspree Endpoint)
 
-Portfolio ini tidak menggunakan backend database server sendiri, melainkan static endpoint submission yang aman.
+Website ini adalah static frontend murni tanpa database backend internal. Pengiriman pesan form kontak menggunakan provider formulir eksternal yang aman:
 
-1. Buka [Formspree](https://formspree.io/) dan buat form baru.
-2. Salin Form Endpoint ID yang diberikan (contoh: `https://formspree.io/f/mqkvrzqe`).
-3. Buat file `.env` di root proyek:
+1. Buat form baru di penyedia formulir (misalnya [Formspree](https://formspree.io/)).
+2. Salin form endpoint yang diberikan.
+3. Buat file `.env` di root direktori proyek:
    ```env
-   VITE_FORMSPREE_ENDPOINT=https://formspree.io/f/mqkvrzqe
+   VITE_FORMSPREE_ENDPOINT=https://formspree.io/f/YOUR_FORM_ID
    ```
-4. Restart container:
-   ```bash
-   docker compose restart
-   ```
-*Catatan: Bila endpoint belum diisi, form secara otomatis menampilkan status unconfigured dan menyediakan direct link `mailto:` tanpa menghasilkan false success.*
+4. Restart development server.
+*(Catatan: Jika endpoint belum diisi, form secara otomatis menampilkan status unconfigured yang informatif dan menyediakan fallback tombol direct email `mailto:`).*
 
 ---
 
@@ -89,27 +89,21 @@ Portfolio ini tidak menggunakan backend database server sendiri, melainkan stati
 
 Proyek ini telah dilengkapi GitHub Actions workflow pada `.github/workflows/deploy.yml`.
 
-### Langkah Aktivasi di GitHub:
-1. Push repository ke GitHub: `git push origin main`.
-2. Buka repository di browser: `https://github.com/Adanix/portofolio`.
-3. Buka tab **Settings** → **Pages**.
-4. Pada bagian **Build and deployment** → **Source**, pilih **GitHub Actions**.
-5. Setiap kali ada commit baru ke branch `main`, workflow akan otomatis menguji, mengompilasi, dan mempublikasikan website ke `https://adanix.github.io/portofolio/`.
+### Langkah Deployment:
+1. Push branch `main` ke repository GitHub Anda.
+2. Buka repository di browser: **Settings** → **Pages**.
+3. Pada opsi **Build and deployment** → **Source**, pilih **GitHub Actions**.
+4. Workflow akan otomatis berjalan pada setiap push untuk menguji, mengompilasi, dan mempublikasikan static assets.
 
-### Mengubah Base Path jika Nama Repository Berubah
-Jika nama repository diganti (misalnya menjadi `portfolio` atau root user pages `username.github.io`):
-1. Buka `vite.config.ts`.
-2. Ubah fallback base path:
-   ```typescript
-   base: process.env.VITE_BASE || (process.env.NODE_ENV === 'production' ? '/nama-repo-baru/' : '/'),
-   ```
-   *(Bila menggunakan custom domain atau root pages, gunakan `'/'`).*
-3. Sesuaikan juga environment variable `VITE_BASE` pada `.github/workflows/deploy.yml`.
+### Menyesuaikan Base Path
+Secara default, Vite mendukung base path yang dinamis:
+- Jika menggunakan root domain / custom domain: base path dapat diset ke `'/'`.
+- Jika menggunakan default GitHub Pages project path (`username.github.io/repo-name/`): tentukan environment variable `VITE_BASE=/repo-name/` saat build, atau sesuaikan nilai default pada `vite.config.ts`.
 
 ---
 
-## 6. Arsitektur & Aturan Integritas Konten
+## 6. Prinsip & Integritas Konten
 
-- **Zero-Toolchain on Host**: VPS host tetap murni tanpa Node.js/toolchain lokal.
-- **Strict Content Authenticity**: Tidak memuat statistik palsu, pendidikan, testimonial palsu, atau riwayat kerja fiktif.
-- **Three-Channel Communication Only**: Hanya menyediakan Contact Form, Verified Email, dan Verified GitHub.
+- **Authentic Proof of Work**: Tidak memuat statistik palsu, pendidikan konvensional, testimonial rekayasa, atau riwayat kerja fiktif.
+- **Dedicated Communication Channels**: Hanya menyediakan Contact Form, Verified Email, dan Verified GitHub.
+- **Zero-Toolchain Flexibility**: Kompatibel untuk dieksekusi di kontainer terisolasi maupun runner CI/CD standar.

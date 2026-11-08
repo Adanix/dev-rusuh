@@ -5,7 +5,7 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: process.env.VITE_BASE || (process.env.NODE_ENV === 'production' ? '/portofolio/' : '/'),
+  base: process.env.VITE_BASE || (process.env.NODE_ENV === 'production' ? '/dev-rusuh/' : '/'),
   server: {
     host: '0.0.0.0',
     port: 5173,

@@ -20,6 +20,6 @@ export const siteConfig: SiteConfig = {
   email: "rahidadani@gmail.com",
   github: "https://github.com/Adanix",
   formspreeEndpoint: import.meta.env.VITE_FORMSPREE_ENDPOINT || "",
-  repoUrl: "https://github.com/Adanix/portofolio",
-  liveUrl: "https://adanix.github.io/portofolio/",
+  repoUrl: "https://github.com/Adanix/dev-rusuh",
+  liveUrl: "",
 };
