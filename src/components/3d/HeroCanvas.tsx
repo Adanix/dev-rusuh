@@ -129,11 +129,8 @@ export const HeroCanvas: React.FC = () => {
     window.addEventListener("resize", handleResize);
 
     // Animation Loop
-    let clock = new THREE.Clock();
     const animate = () => {
       animFrameIdRef.current = requestAnimationFrame(animate);
-
-      clock.getDelta();
 
       if (groupRef.current) {
         if (isPlayingRef.current && !isDraggingRef.current) {
@@ -142,7 +139,7 @@ export const HeroCanvas: React.FC = () => {
           groupRef.current.rotation.x += velocityRef.current.x;
 
           // Gentle core pulse
-          const elapsedTime = clock.getElapsedTime();
+          const elapsedTime = performance.now() * 0.001;
           const scale = 1 + Math.sin(elapsedTime * 2) * 0.04;
           coreMesh.scale.set(scale, scale, scale);
         } else if (!isPlayingRef.current && isDraggingRef.current) {
